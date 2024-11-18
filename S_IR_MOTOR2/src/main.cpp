@@ -14,6 +14,10 @@
 #define MAXSPEED 1000
 #define MINSPEED 100
 
+#define LED_BLUE 6
+#define LED_GREEN 5
+#define LED_RED 14
+
 int currspeed = 200;
 int prevspeed = 200;
 int inc = 100;
