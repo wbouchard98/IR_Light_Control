@@ -18,6 +18,13 @@
 #define LED_GREEN 5
 #define LED_RED 14
 
+#define PWM_CHAN 0
+#define PWM_FREQ 500
+#define PWM_RES 8
+#define MAX_DUTY_CYCLE (int)(pow(2,PWM_RES)-1)
+
+
+
 int currspeed = 200;
 int prevspeed = 200;
 int inc = 100;
@@ -35,11 +42,14 @@ long IR_Value;
 
 void setup() 
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   const char* incomingString = "{\"Name\":\"DEFAULT_NAME\",\"Color\":\"DEFAULT_COLOR\",\"Value\":8}";
   DeserializationError error = deserializeJson(myDoc, incomingString);
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
   stepper.setMaxSpeed(MAXSPEED);
+
+  ledcSetup(PWM_CHAN, PWM_FREQ, PWM_RES);
+  ledcAttachPin(LED_BLUE, PWM_CHAN);
 }
 
 void loop() 
@@ -182,7 +192,8 @@ void loop()
         //Serial.println("A5");
         myDoc["Value"] = command; 
         myDoc["Color"] = "Black";
-        myDoc["Name"] = "A5";  
+        myDoc["Name"] = "A5";
+        ledcWrite(PWM_CHAN, MAX_DUTY_CYCLE/2);  
       }
 
       //LED Jaune
@@ -193,6 +204,7 @@ void loop()
         myDoc["Value"] = command; 
         myDoc["Color"] = "Black";
         myDoc["Name"] = "A6"; 
+        ledcWrite(PWM_CHAN, MAX_DUTY_CYCLE/10);
       }
 
       //LED Orange
@@ -203,6 +215,7 @@ void loop()
         myDoc["Value"] = command; 
         myDoc["Color"] = "Black";
         myDoc["Name"] = "A7";
+        ledcWrite(PWM_CHAN, MAX_DUTY_CYCLE/20);
       }
       IrReceiver.resume();
       IR_Name = myDoc["Name"];
